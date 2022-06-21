@@ -9,6 +9,9 @@ import { useState } from "react";
 function App() {
   const [mode, setMode] = useState("light");
 
+  const [currentThread, setCurrentThread] = useState("");
+
+
   const darkTheme = createTheme({
     palette: {
       mode: mode,
@@ -19,9 +22,9 @@ function App() {
       <Box bgcolor={"background.default"} color={"text.primary"}>
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
-        <Sidebar setMode={setMode} mode={mode}/>
-          <Feed />
-          <Rightbar />
+        <Sidebar currentThread={currentThread} setCurrentThread={setCurrentThread} setMode={setMode} mode={mode}/>
+          <Feed currentThread={currentThread} setCurrentThread={setCurrentThread} />
+          <Rightbar currentThread={currentThread} setCurrentThread={setCurrentThread} />
         </Stack>
         <Add />
       </Box>

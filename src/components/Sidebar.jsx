@@ -15,60 +15,11 @@ import React from "react";
 import Threads from "./Threads";
 
 
-const Sidebar = ({ mode, setMode }) => {
+const Sidebar = ({ currentThread, setCurrentThread, mode, setMode }) => {
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={200}>
-        {/* <List>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="7097654321" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="5141234567" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="5147654321" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="7801234567" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="7807654321" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#simple-list">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="6021234567" />
-            </ListItemButton>
-          </ListItem>*/}
-          <Threads/>
+          <Threads currentThread={currentThread} setCurrentThread={setCurrentThread} />
           <List>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
