@@ -12,24 +12,18 @@ import {
   Switch,
 } from "@mui/material";
 import React from "react";
+import Threads from "./Threads";
 
-const Sidebar = ({mode,setMode}) => {
+
+const Sidebar = ({ mode, setMode }) => {
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={200}>
-         <List>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href="#home">
-              <ListItemIcon>
-                <PhoneAndroidOutlined />
-              </ListItemIcon>
-              <ListItemText primary="7091234567"/>
-            </ListItemButton>
-          </ListItem>
+        {/* <List>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
               <ListItemText primary="7097654321" />
             </ListItemButton>
@@ -37,7 +31,7 @@ const Sidebar = ({mode,setMode}) => {
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
               <ListItemText primary="5141234567" />
             </ListItemButton>
@@ -45,15 +39,15 @@ const Sidebar = ({mode,setMode}) => {
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
-              <ListItemText primary="5147654321"/>
+              <ListItemText primary="5147654321" />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
               <ListItemText primary="7801234567" />
             </ListItemButton>
@@ -61,7 +55,7 @@ const Sidebar = ({mode,setMode}) => {
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
               <ListItemText primary="7807654321" />
             </ListItemButton>
@@ -69,20 +63,22 @@ const Sidebar = ({mode,setMode}) => {
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <PhoneAndroidOutlined />
+                <PhoneAndroidOutlined />
               </ListItemIcon>
               <ListItemText primary="6021234567" />
             </ListItemButton>
-          </ListItem>
+          </ListItem>*/}
+          <Threads/>
+          <List>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
               <ListItemIcon>
-              <ModeNight />
+                <ModeNight />
               </ListItemIcon>
-              <Switch onChange={e=>setMode(mode === "light" ? "dark" : "light")}/>
+              <Switch onChange={e => setMode(mode === "light" ? "dark" : "light")} />
             </ListItemButton>
           </ListItem>
-  </List> 
+        </List> 
       </Box>
     </Box>
   );
