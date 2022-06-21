@@ -15,7 +15,12 @@ import React, { Component } from "react";
 import axios from "axios";
 
 
-export function Threads() {
+
+const Threads = ({ currentThread, setCurrentThread  }) => {
+
+// export function Threads({ currentThread, setCurrentThread }) {
+
+
   const [threadList, setThreadList] = React.useState([]);
   const [update, setUpdate] = React.useState(false);
 
@@ -44,6 +49,10 @@ export function Threads() {
     setThreadList(tempArray)
   }
 
+  function changeThread(target) {
+    console.log(target)
+  }
+
   React.useEffect(() => {
     processData()
   }, [update]);
@@ -51,12 +60,12 @@ export function Threads() {
   return (
     <List>
       {threadList.map(listitem => (
-        <ListItem disablePadding>
+        <ListItem disablePadding >
           <ListItemButton component="a" href="#simple-list">
             <ListItemIcon>
               <PhoneAndroidOutlined />
             </ListItemIcon>
-            <ListItemText primary={listitem} />
+            <ListItemText primary={listitem} onClick={(e) => setCurrentThread(listitem)} />
           </ListItemButton>
         </ListItem>
       ))}

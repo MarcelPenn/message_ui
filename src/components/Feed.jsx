@@ -29,7 +29,7 @@ const muiTheme = createTheme({
 
 
 
-export function Feed() {
+const Feed = ({ currentThread, setCurrentThread, mode, setMode }) => {
 
   const [chatCtl] = React.useState(
     new ChatController({
@@ -37,23 +37,23 @@ export function Feed() {
     }),
   );
 
-  React.useMemo(() => {
+  // React.useMemo(() => {
 
-    //  chatCtl.addMessage({
-    //   type: 'text',
-    //   content: `You have selected struggle.`,
-    //   self: false,
-    //   avatar: '-',
-    // });
+  //   //  chatCtl.addMessage({
+  //   //   type: 'text',
+  //   //   content: `You have selected struggle.`,
+  //   //   self: false,
+  //   //   avatar: '-',
+  //   // });
 
-    const text = chatCtl.setActionRequest({
-      type: 'text',
-      placeholder: 'Please enter something',
-    });
+  //   const text = chatCtl.setActionRequest({
+  //     type: 'text',
+  //     placeholder: 'Please enter something',
+  //   });
 
 
-    // echo(chatCtl);
-  }, [chatCtl]);
+  //   // echo(chatCtl);
+  // }, [chatCtl]);
 
 
 
@@ -64,7 +64,7 @@ export function Feed() {
   async function getData() {
     let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
       userId: 'cl4e8hknd12699bqsknbibi8hm',
-      partyId: "+17096902975",
+      partyId: currentThread,
     })
       .then((response) => {
         console.log(response.data)
@@ -95,24 +95,21 @@ export function Feed() {
   }
 
   React.useEffect(() => {
+    chatCtl.clearMessages()
     processData()
-  }, [update]);
+    chatCtl.setActionRequest(
+      { type: 'text', always: true },
+      (response) => {
+        console.log(response.value);
+      }
+    );
+  }, [currentThread]);
 
 
 
   return (
     <Box flex={4} p={{ xs: 0, md: 2 }}>
       <MuiChat chatController={chatCtl} />
-      {/* 
-        <>
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-        </> */}
-
     </Box>
   );
 };
