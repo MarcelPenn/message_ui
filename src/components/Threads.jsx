@@ -27,7 +27,7 @@ const Threads = ({ currentThread, setCurrentThread  }) => {
 
   async function getData() {
     let dataObj = await axios.post('https://estuary.altinc.ca/threads', {
-      userId: 'cl4e8hknd12699bqsknbibi8hm',
+      userId: 'cl1m8wqyr4917bqskm0z1mcxb',
     })
       .then((response) => {
         console.log(response.data)
