@@ -63,7 +63,7 @@ const Feed = ({ currentThread, setCurrentThread, mode, setMode }) => {
 
   async function getData() {
     let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
-      userId: 'cl4e8hknd12699bqsknbibi8hm',
+      userId: 'cl1m8wqyr4917bqskm0z1mcxb',
       partyId: currentThread,
     })
       .then((response) => {
@@ -87,7 +87,7 @@ const Feed = ({ currentThread, setCurrentThread, mode, setMode }) => {
       chatCtl.addMessage({
         type: 'text',
         content: threadData.unread_smss[item].sms_text,
-        self: false,
+        self: threadData.unread_smss[item].self,
         avatar: '-',
       });
     }
