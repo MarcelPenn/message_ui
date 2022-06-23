@@ -10,62 +10,43 @@ import {
   ListItemIcon,
   ListItemText,
   Switch,
+  Badge,
 } from "@mui/material";
 import React, { Component } from "react";
-import axios from "axios";
+// import axios from "axios";
+import { DataContext } from "../Utils"
 
 
-
-const Threads = ({ currentThread, setCurrentThread  }) => {
-
-// export function Threads({ currentThread, setCurrentThread }) {
+const Threads = ({ }) => {
 
 
-  const [threadList, setThreadList] = React.useState([]);
-  const [update, setUpdate] = React.useState(false);
+  // const [, setThreadList] = React.useState([]);
 
+  // const [update, setUpdate] = React.useState(false);
+  const { threads, setState } = React.useContext(DataContext);
 
-  async function getData() {
-    let dataObj = await axios.post('https://estuary.altinc.ca/threads', {
-      userId: 'cl1m8wqyr4917bqskm0z1mcxb',
-    })
-      .then((response) => {
-        console.log(response.data)
-        return response.data
-      }, (error) => {
-        return error;
-      });
+  // let threadData = DataContext;
+  // let threadList = threadData.threadList
+  // let currentThread = threadData.currentThread
 
-    return dataObj
-
+ 
+  function changeThread(threaditem) {
+    setState({currentThread: threaditem})
   }
 
-  async function processData() {
-    let threadData = await getData()
-    let tempArray = []
-    for (let item in threadData) {
-      tempArray[item] = threadData[item].party
-    }
-    setThreadList(tempArray)
-  }
-
-  function changeThread(target) {
-    console.log(target)
-  }
-
-  React.useEffect(() => {
-    processData()
-  }, [update]);
+  console.log(threads)
 
   return (
     <List>
-      {threadList.map(listitem => (
+      {threads.map(listitem => (
         <ListItem disablePadding >
           <ListItemButton component="a" href="#simple-list">
             <ListItemIcon>
-              <PhoneAndroidOutlined />
+              <Badge badgeContent={listitem.new} color="error">
+                <PhoneAndroidOutlined />
+              </Badge>
             </ListItemIcon>
-            <ListItemText primary={listitem} onClick={(e) => setCurrentThread(listitem)} />
+            <ListItemText primary={listitem.label} onClick={(e) => changeThread(listitem.label)} />
           </ListItemButton>
         </ListItem>
       ))}
