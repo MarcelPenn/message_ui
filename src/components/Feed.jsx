@@ -18,7 +18,7 @@ import {
 } from 'chat-ui-react';
 import React from 'react';
 import axios from 'axios';
-
+// import StartIcon from '@material-ui/icons/StartIcon';
 import { DataContext } from "../Utils"
 
 
@@ -67,7 +67,6 @@ const Feed = ({ mode, setMode }) => {
   const [update, setUpdate] = React.useState(false);
   const [lastPickup, setLastPickup] = React.useState("");
 
-  const [refreshInterval, setRefreshInterval] = React.useState(1000);
 
 
   // gets entire message thread from server
@@ -87,65 +86,84 @@ const Feed = ({ mode, setMode }) => {
 
   }
 
-  // gets latest message in thread from server
-  async function getLatestData() {
-    console.log(lastPickup)
-    let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
-      userId: 'cl1m8wqyr4917bqskm0z1mcxb',
-      partyId: currentThread,
-      dateTime: lastPickup,
-    })
-      .then((response) => {
-        console.log(response.data)
-        return response.data
-      }, (error) => {
-        return error;
-      });
+  // // gets latest message in thread from server
+  // async function getLatestData() {
+  //   console.log(lastPickup)
+  //   let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
+  //     userId: 'cl1m8wqyr4917bqskm0z1mcxb',
+  //     partyId: currentThread,
+  //     dateTime: lastPickup,
+  //   })
+  //     .then((response) => {
+  //       console.log(response.data)
+  //       return response.data
+  //     }, (error) => {
+  //       return error;
+  //     });
 
-    return dataObj
+  //   return dataObj
 
-  }
+  // }
 
 
   // preps data for display
   async function processData() {
     let threadData = await getData()
     setLastPickup(threadData.date)
-    let tempArray = []
+    // let tempArray = []
     for (let item in threadData.unread_smss) {
-      console.log()
-      // tempArray[item] = threadData.unread_smss[item].sms_text
-      chatCtl.addMessage({
-        type: 'text',
-        content: threadData.unread_smss[item].sms_text,
-        self: threadData.unread_smss[item].self,
-        avatar: '-',
-      });
-    }
-    setThreadList(tempArray)
-  }
+      try {
+        var smsObj = JSON.parse(threadData.unread_smss[item].sms_text);
+        var imgUrl = smsObj.attachments[0]["content-url"]
+        var encKey = smsObj.attachments[0]["encryption-key"]
+        var iid = imgUrl.split("/")[3]
+        var imgEUrl = "https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey
+        console.log("https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey + "")
+        chatCtl.addMessage({
+          type: 'jsx',
+          // content: "",
+          content: <img src={imgEUrl} width={300} />,
+          self: threadData.unread_smss[item].self,
+          avatar: '-',
+        });
 
-
-    // preps data for display
-    async function processLatestData() {
-      let threadData = await getLatestData()
-        console.log(threadData.date)
-        setLastPickup(threadData.date)
-
-      let tempArray = []
-      for (let item in threadData.unread_smss) {
+      } catch {
         console.log()
-        // tempArray[item] = threadData.unread_smss[item].sms_text
         chatCtl.addMessage({
           type: 'text',
           content: threadData.unread_smss[item].sms_text,
           self: threadData.unread_smss[item].self,
           avatar: '-',
         });
-        // setLastPickup()
       }
-      setThreadList(tempArray)
+      // tempArray[item] = threadData.unread_smss[item].sms_text
+
     }
+
+    // setThreadList(tempArray)
+  }
+
+
+  // // preps data for display
+  // async function processLatestData() {
+  //   let threadData = await getLatestData()
+  //     console.log(threadData.date)
+  //     setLastPickup(threadData.date)
+
+  //   let tempArray = []
+  //   for (let item in threadData.unread_smss) {
+  //     console.log()
+  //     // tempArray[item] = threadData.unread_smss[item].sms_text
+  //     chatCtl.addMessage({
+  //       type: 'text',
+  //       content: threadData.unread_smss[item].sms_text,
+  //       self: threadData.unread_smss[item].self,
+  //       avatar: '-',
+  //     });
+  //     // setLastPickup()
+  //   }
+  //   setThreadList(tempArray)
+  // }
 
   // sends new message to server
   async function sendMessage(to, body, userId) {
@@ -176,6 +194,8 @@ const Feed = ({ mode, setMode }) => {
         sendMessage(currentThread, response.value, 'cl1m8wqyr4917bqskm0z1mcxb')
       }
     );
+
+
   }, [currentThread]);
 
   // const fetchMetrics = () => {

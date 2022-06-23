@@ -47,14 +47,15 @@ function DataManager() {
 
     const fetchUpdate = () => {
         processThreadData()
+
     }
 
-    useEffect(() => {
-        if (refreshInterval && refreshInterval > 0) {
-            const interval = setInterval(fetchUpdate, refreshInterval);
-            return () => clearInterval(interval);
-        }
-    }, [refreshInterval]);
+    // useEffect(() => {
+    //     if (refreshInterval && refreshInterval > 0) {
+    //         const interval = setInterval(fetchUpdate, refreshInterval);
+    //         return () => clearInterval(interval);
+    //     }
+    // }, [refreshInterval]);
 
     // return (
     //     <div>Main Component</div>
