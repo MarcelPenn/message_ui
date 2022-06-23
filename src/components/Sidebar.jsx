@@ -15,11 +15,11 @@ import React from "react";
 import Threads from "./Threads";
 
 
-const Sidebar = ({ currentThread, setCurrentThread, mode, setMode }) => {
+const Sidebar = ({ mode, setMode }) => {
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={200}>
-          <Threads currentThread={currentThread} setCurrentThread={setCurrentThread} />
+          <Threads/>
           <List>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
