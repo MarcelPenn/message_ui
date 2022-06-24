@@ -8,6 +8,7 @@ import {
   ThemeProvider,
   Typography,
   createTheme,
+  Backdrop,
 } from '@mui/material';
 import {
   ActionRequest,
@@ -20,6 +21,7 @@ import React from 'react';
 import axios from 'axios';
 // import StartIcon from '@material-ui/icons/StartIcon';
 import { DataContext } from "../Utils"
+import Picker from 'emoji-picker-react';
 
 
 const muiTheme = createTheme({
@@ -35,6 +37,15 @@ const muiTheme = createTheme({
 const Feed = ({ mode, setMode }) => {
 
   const { currentThread, setState } = React.useContext(DataContext);
+
+  const [chosenEmoji, setChosenEmoji] = React.useState(null);
+
+  const onEmojiClick = (event, emojiObject) => {
+    console.log(emojiObject.emoji)
+    sendEmoji(currentThread, emojiObject.emoji, 'cl1m8wqyr4917bqskm0z1mcxb')
+    setChosenEmoji(emojiObject);
+    setOpenEmoji(false)
+  };
 
 
   const [chatCtl] = React.useState(
@@ -64,7 +75,10 @@ const Feed = ({ mode, setMode }) => {
 
 
   const [threadList, setThreadList] = React.useState([]);
-  const [update, setUpdate] = React.useState(false);
+  const [currentImage, setCurrentImage] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const [openEmoji, setOpenEmoji] = React.useState(false);
+
   const [lastPickup, setLastPickup] = React.useState("");
 
 
@@ -105,7 +119,18 @@ const Feed = ({ mode, setMode }) => {
 
   // }
 
+  function handleImageClick(url) {
+    setCurrentImage(url)
+    setOpen(true)
+  }
 
+  function handleClose() {
+    setOpen(false)
+  }
+
+  function handleEmojiClose() {
+    setOpenEmoji(false)
+  }
   // preps data for display
   async function processData() {
     let threadData = await getData()
@@ -122,7 +147,7 @@ const Feed = ({ mode, setMode }) => {
         chatCtl.addMessage({
           type: 'jsx',
           // content: "",
-          content: <img src={imgEUrl} width={300} />,
+          content: <img src={imgEUrl} width={200} onClick={(e) => handleImageClick(e.target.src)} />,
           self: threadData.unread_smss[item].self,
           avatar: '-',
         });
@@ -184,13 +209,40 @@ const Feed = ({ mode, setMode }) => {
 
   }
 
+
+  async function sendEmoji(to, body, userId) {
+    let dataObj = await axios.post('https://estuary.altinc.ca/sendMessage', {
+      userId: userId,
+      to: to,
+      contentType: "text/plain",
+      body: body
+    })
+      .then((response) => {
+        console.log(response.data)
+        return response.data
+      }, (error) => {
+        return error;
+      });
+
+
+      chatCtl.addMessage({
+        type: 'text',
+        content: body,
+        self: true,
+        avatar: '-',
+      });
+
+    return dataObj
+
+  }
+
   React.useEffect(() => {
     chatCtl.clearMessages()
     processData()
     chatCtl.setActionRequest(
       { type: 'text', always: true },
       (response) => {
-        console.log(response.value);
+        // console.log(response.value);
         sendMessage(currentThread, response.value, 'cl1m8wqyr4917bqskm0z1mcxb')
       }
     );
@@ -212,6 +264,22 @@ const Feed = ({ mode, setMode }) => {
   return (
     <Box flex={4} p={{ xs: 0, md: 2 }}>
       <MuiChat chatController={chatCtl} />
+      {/* <Button onClick={setOpenEmoji(true)}>Emoji</Button> */}
+      <Button variant="contained"   onClick={() => { setOpenEmoji(true);}} >Emoji</Button>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 2 }}
+        open={openEmoji}
+        onClick={handleEmojiClose}
+      >
+        <Picker open={false} onEmojiClick={onEmojiClick} />
+      </Backdrop>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 2 }}
+        open={open}
+        onClick={handleClose}
+      >
+        <img src={currentImage} height="83%" />
+      </Backdrop>
     </Box>
   );
 };
