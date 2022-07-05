@@ -262,12 +262,12 @@ const Feed = ({ mode, setMode }) => {
   // }, [refreshInterval]);
 
   return (
-    <Box flex={4} p={{ xs: 0, md: 2 }}>
+    <Box flex={2}>
       <MuiChat chatController={chatCtl} />
       {/* <Button onClick={setOpenEmoji(true)}>Emoji</Button> */}
       <Button variant="contained"   onClick={() => { setOpenEmoji(true);}} >Emoji</Button>
       <Backdrop
-        sx={{ color: '#fff', zIndex: 2 }}
+        sx={{ color: '#fff', zIndex: 2, padding: 2 }}
         open={openEmoji}
         onClick={handleEmojiClose}
       >

@@ -12,10 +12,10 @@ import React from "react";
 
 const Rightbar = () => {
   return (
-    <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
-      <Box position="fixed" width={200}>
+    <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
+      <Box position="fixed" width={300}>
         
-        <Typography variant="h6" fontWeight={100} mt={2}>
+        <Typography variant="h6" fontWeight={100} mt={2} ml={9}>
           Latest Conversations
         </Typography>
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
