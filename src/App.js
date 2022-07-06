@@ -88,7 +88,8 @@ useEffect(() => {
         <DataManager/>
         <Box bgcolor={"background.default"} color={"text.primary"}>
           <Navbar />
-          <Stack direction="row" spacing={2} justifyContent="space-between">
+          <Stack direction="row" //</Box>spacing={2} justifyContent="space-between"
+          >
             <Sidebar setMode={setMode} mode={mode} />
             <Feed />
             <Rightbar />

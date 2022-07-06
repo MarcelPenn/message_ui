@@ -1,4 +1,4 @@
-import {
+{/*import {
   Card,
   CardContent,
   Typography,
@@ -17,4 +17,5 @@ const Post = () => {
   );
 };
 
-export default Post;
+export default Post; 
+*/}
