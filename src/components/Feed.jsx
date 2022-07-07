@@ -1,6 +1,7 @@
 import Post from "./Post";
 import {
   Box,
+  TextField,
   Button,
   CssBaseline,
   Divider,
@@ -17,6 +18,7 @@ import {
   FileActionResponse,
   MuiChat,
 } from 'chat-ui-react';
+
 import React from 'react';
 import axios from 'axios';
 // import StartIcon from '@material-ui/icons/StartIcon';
@@ -46,6 +48,9 @@ const Feed = ({ mode, setMode }) => {
   const [openEmoji, setOpenEmoji] = React.useState(false);
   const [refreshInterval, setRefreshInterval] = React.useState(1000);
   const [runUpdate, setRunUpdate] = React.useState(false);
+
+
+  const [chatInput, setChatInput] = React.useState('');
 
 
   const onEmojiClick = (event, emojiObject) => {
@@ -89,6 +94,31 @@ const Feed = ({ mode, setMode }) => {
       setThreadList(threadData)
       setRunUpdate(prevCheck => !prevCheck)
     }
+  }
+
+
+  //
+  function GoodInput() {
+    // actionRequest: ActionRequest;
+
+    const setResponse = React.useCallback(() => {
+      const res = { type: 'custom', value: 'Good!' };
+      chatCtl.setActionResponse(ActionRequest, res);
+    }, [ActionRequest, chatCtl]);
+
+    return (
+      <div>
+        <TextField id="outlined-basic" variant="outlined" onChange={e => handleInputChange(e)}/>
+        <Button
+          type="button"
+          onClick={e => sendMessage(currentThread, chatInput, 'cl1m8wqyr4917bqskm0z1mcxb')}
+          variant="contained"
+          color="primary"
+        >
+          Send
+        </Button>
+      </div>
+    );
   }
 
   // sends new message to server
@@ -141,7 +171,11 @@ const Feed = ({ mode, setMode }) => {
     chatCtl.clearMessages()
     checkUpdate()
     chatCtl.setActionRequest(
-      { type: 'text', always: true },
+      // { type: 'text', always: true },
+      {
+        type: 'custom',
+        Component: GoodInput,
+      },
       (response) => {
         // console.log(response.value);
         sendMessage(currentThread, response.value, 'cl1m8wqyr4917bqskm0z1mcxb')
@@ -152,7 +186,7 @@ const Feed = ({ mode, setMode }) => {
 
   React.useEffect(() => {
     checkUpdate()
-
+    console.log(chatInput)
   }, [runUpdate]);
 
 
@@ -189,6 +223,8 @@ const Feed = ({ mode, setMode }) => {
 
   function triggerUpdate() {
     setRunUpdate(prevCheck => !prevCheck)
+    // window.scrollTo(0, document.body.scrollHeight);
+
   }
   //refresh timer 
 
@@ -203,7 +239,7 @@ const Feed = ({ mode, setMode }) => {
 
 
 
-// event handlers 
+  // event handlers 
 
   function handleImageClick(url) {
     setCurrentImage(url)
@@ -218,27 +254,58 @@ const Feed = ({ mode, setMode }) => {
     setOpenEmoji(false)
   }
 
+  function handleInputChange(e) {
+    // setOpenEmoji(false)
+    console.log(e.target.value)
+    setChatInput(e.target.value)
+  }
   return (
-    <Box //flex={2}
-      sx={{ justifyContent: { md: "flex-start" } }}
-    >
-      <MuiChat chatController={chatCtl} />
-      {/* <Button onClick={setOpenEmoji(true)}>Emoji</Button> */}
-      <Button variant="contained" onClick={() => { setOpenEmoji(true); }} >Emoji</Button>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: 2 }}
-        open={openEmoji}
-        onClick={handleEmojiClose}
+    // <Box //flex={2}
+    //   sx={{ justifyContent: { md: "flex-start" } }}
+    // >
+    //   <MuiChat chatController={chatCtl} />
+    //   {/* <Button onClick={setOpenEmoji(true)}>Emoji</Button> */}
+
+    // </Box>
+    <Box sx={{ height: '100%', backgroundColor: 'gray' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: window.innerHeight - 130,
+          maxWidth: '640px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          bgcolor: 'background.default',
+        }}
       >
-        <Picker open={false} onEmojiClick={onEmojiClick} />
-      </Backdrop>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: 2 }}
-        open={open}
-        onClick={handleClose}
-      >
-        <img src={currentImage} height="83%" />
-      </Backdrop>
+        {/* <Typography sx={{ p: 1 }}>
+        Welcome to{' '}
+        <Link href="https://github.com/twihike/chat-ui-react">
+          chat-ui-react
+        </Link>{' '}
+        demo site.
+      </Typography> */}
+        <Divider />
+        <Box sx={{ flex: '1 1 0%', minHeight: 0 }}>
+          <MuiChat chatController={chatCtl} />
+          <Button variant="contained" onClick={() => { setOpenEmoji(true); }} >Emoji</Button>
+          <Backdrop
+            sx={{ color: '#fff', zIndex: 2 }}
+            open={openEmoji}
+            onClick={handleEmojiClose}
+          >
+            <Picker open={false} onEmojiClick={onEmojiClick} />
+          </Backdrop>
+          <Backdrop
+            sx={{ color: '#fff', zIndex: 2 }}
+            open={open}
+            onClick={handleClose}
+          >
+            <img src={currentImage} height="83%" />
+          </Backdrop>
+        </Box>
+      </Box>
     </Box>
   );
 };
