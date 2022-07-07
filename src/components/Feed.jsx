@@ -36,9 +36,17 @@ const muiTheme = createTheme({
 
 const Feed = ({ mode, setMode }) => {
 
-  const { currentThread, setState } = React.useContext(DataContext);
+  const { currentThread, lastUpdate, setState } = React.useContext(DataContext);
 
   const [chosenEmoji, setChosenEmoji] = React.useState(null);
+
+  const [threadList, setThreadList] = React.useState([]);
+  const [currentImage, setCurrentImage] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const [openEmoji, setOpenEmoji] = React.useState(false);
+  const [refreshInterval, setRefreshInterval] = React.useState(1000);
+  const [runUpdate, setRunUpdate] = React.useState(false);
+
 
   const onEmojiClick = (event, emojiObject) => {
     console.log(emojiObject.emoji)
@@ -54,40 +62,12 @@ const Feed = ({ mode, setMode }) => {
     }),
   );
 
-  // React.useMemo(() => {
-
-  //   //  chatCtl.addMessage({
-  //   //   type: 'text',
-  //   //   content: `You have selected struggle.`,
-  //   //   self: false,
-  //   //   avatar: '-',
-  //   // });
-
-  //   const text = chatCtl.setActionRequest({
-  //     type: 'text',
-  //     placeholder: 'Please enter something',
-  //   });
-
-
-  //   // echo(chatCtl);
-  // }, [chatCtl]);
-
-
-
-  const [threadList, setThreadList] = React.useState([]);
-  const [currentImage, setCurrentImage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
-  const [openEmoji, setOpenEmoji] = React.useState(false);
-
-  const [lastPickup, setLastPickup] = React.useState("");
-
-
-
   // gets entire message thread from server
   async function getData() {
     let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
       userId: 'cl1m8wqyr4917bqskm0z1mcxb',
       partyId: currentThread,
+      last_id: lastUpdate,
     })
       .then((response) => {
         console.log(response.data)
@@ -100,95 +80,16 @@ const Feed = ({ mode, setMode }) => {
 
   }
 
-  // // gets latest message in thread from server
-  // async function getLatestData() {
-  //   console.log(lastPickup)
-  //   let dataObj = await axios.post('https://estuary.altinc.ca/messageThread', {
-  //     userId: 'cl1m8wqyr4917bqskm0z1mcxb',
-  //     partyId: currentThread,
-  //     dateTime: lastPickup,
-  //   })
-  //     .then((response) => {
-  //       console.log(response.data)
-  //       return response.data
-  //     }, (error) => {
-  //       return error;
-  //     });
-
-  //   return dataObj
-
-  // }
-
-  function handleImageClick(url) {
-    setCurrentImage(url)
-    setOpen(true)
-  }
-
-  function handleClose() {
-    setOpen(false)
-  }
-
-  function handleEmojiClose() {
-    setOpenEmoji(false)
-  }
   // preps data for display
-  async function processData() {
+  async function checkUpdate() {
     let threadData = await getData()
-    setLastPickup(threadData.date)
-    // let tempArray = []
-    for (let item in threadData.unread_smss) {
-      try {
-        var smsObj = JSON.parse(threadData.unread_smss[item].sms_text);
-        var imgUrl = smsObj.attachments[0]["content-url"]
-        var encKey = smsObj.attachments[0]["encryption-key"]
-        var iid = imgUrl.split("/")[3]
-        var imgEUrl = "https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey
-        console.log("https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey + "")
-        chatCtl.addMessage({
-          type: 'jsx',
-          // content: "",
-          content: <img src={imgEUrl} width={200} onClick={(e) => handleImageClick(e.target.src)} />,
-          self: threadData.unread_smss[item].self,
-          avatar: '-',
-        });
-
-      } catch {
-        console.log()
-        chatCtl.addMessage({
-          type: 'text',
-          content: threadData.unread_smss[item].sms_text,
-          self: threadData.unread_smss[item].self,
-          avatar: '-',
-        });
-      }
-      // tempArray[item] = threadData.unread_smss[item].sms_text
-
+    let lastItem = threadData.unread_smss[Object.keys(threadData.unread_smss)[Object.keys(threadData.unread_smss).length - 1]]
+    if (lastItem !== undefined && lastItem.sms_id !== lastUpdate) {
+      setState({ lastUpdate: lastItem.sms_id })
+      setThreadList(threadData)
+      setRunUpdate(prevCheck => !prevCheck)
     }
-
-    // setThreadList(tempArray)
   }
-
-
-  // // preps data for display
-  // async function processLatestData() {
-  //   let threadData = await getLatestData()
-  //     console.log(threadData.date)
-  //     setLastPickup(threadData.date)
-
-  //   let tempArray = []
-  //   for (let item in threadData.unread_smss) {
-  //     console.log()
-  //     // tempArray[item] = threadData.unread_smss[item].sms_text
-  //     chatCtl.addMessage({
-  //       type: 'text',
-  //       content: threadData.unread_smss[item].sms_text,
-  //       self: threadData.unread_smss[item].self,
-  //       avatar: '-',
-  //     });
-  //     // setLastPickup()
-  //   }
-  //   setThreadList(tempArray)
-  // }
 
   // sends new message to server
   async function sendMessage(to, body, userId) {
@@ -200,6 +101,7 @@ const Feed = ({ mode, setMode }) => {
     })
       .then((response) => {
         console.log(response.data)
+        setState({ lastUpdate: response.data.id })
         return response.data
       }, (error) => {
         return error;
@@ -208,7 +110,6 @@ const Feed = ({ mode, setMode }) => {
     return dataObj
 
   }
-
 
   async function sendEmoji(to, body, userId) {
     let dataObj = await axios.post('https://estuary.altinc.ca/sendMessage', {
@@ -225,12 +126,12 @@ const Feed = ({ mode, setMode }) => {
       });
 
 
-      chatCtl.addMessage({
-        type: 'text',
-        content: body,
-        self: true,
-        avatar: '-',
-      });
+    chatCtl.addMessage({
+      type: 'text',
+      content: body,
+      self: true,
+      avatar: '-',
+    });
 
     return dataObj
 
@@ -238,7 +139,7 @@ const Feed = ({ mode, setMode }) => {
 
   React.useEffect(() => {
     chatCtl.clearMessages()
-    processData()
+    checkUpdate()
     chatCtl.setActionRequest(
       { type: 'text', always: true },
       (response) => {
@@ -246,30 +147,86 @@ const Feed = ({ mode, setMode }) => {
         sendMessage(currentThread, response.value, 'cl1m8wqyr4917bqskm0z1mcxb')
       }
     );
-
-
   }, [currentThread]);
 
-  // const fetchMetrics = () => {
-  //   // processLatestData()
-  // }
 
-  // React.useEffect(() => {
-  //   if (refreshInterval && refreshInterval > 0) {
-  //     const interval = setInterval(fetchMetrics, refreshInterval);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [refreshInterval]);
+  React.useEffect(() => {
+    checkUpdate()
+
+  }, [runUpdate]);
+
+
+  React.useEffect(() => {
+    for (let item in threadList.unread_smss) {
+      try {
+        var smsObj = JSON.parse(threadList.unread_smss[item].sms_text);
+        var imgUrl = smsObj.attachments[0]["content-url"]
+        var encKey = smsObj.attachments[0]["encryption-key"]
+        var iid = imgUrl.split("/")[3]
+        var imgEUrl = "https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey
+        console.log("https://estuary.altinc.ca:8443/twillio/" + iid + "/" + encKey + "")
+        chatCtl.addMessage({
+          type: 'jsx',
+          // content: "",
+          content: <img src={imgEUrl} width={200} onClick={(e) => handleImageClick(e.target.src)} />,
+          self: threadList.unread_smss[item].self,
+          avatar: '-',
+        });
+
+      } catch {
+        console.log()
+        chatCtl.addMessage({
+          type: 'text',
+          content: threadList.unread_smss[item].sms_text,
+          self: threadList.unread_smss[item].self,
+          avatar: '-',
+        });
+      }
+    }
+
+  }, [threadList]);
+
+
+  function triggerUpdate() {
+    setRunUpdate(prevCheck => !prevCheck)
+  }
+  //refresh timer 
+
+  React.useEffect(() => {
+    if (refreshInterval && refreshInterval > 0) {
+      const interval = setInterval(triggerUpdate, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [refreshInterval]);
+
+
+
+
+
+// event handlers 
+
+  function handleImageClick(url) {
+    setCurrentImage(url)
+    setOpen(true)
+  }
+
+  function handleClose() {
+    setOpen(false)
+  }
+
+  function handleEmojiClose() {
+    setOpenEmoji(false)
+  }
 
   return (
     <Box //flex={2}
-    sx={{ justifyContent: { md: "flex-start"} }}
+      sx={{ justifyContent: { md: "flex-start" } }}
     >
       <MuiChat chatController={chatCtl} />
       {/* <Button onClick={setOpenEmoji(true)}>Emoji</Button> */}
-      <Button variant="contained"   onClick={() => { setOpenEmoji(true);}} >Emoji</Button>
+      <Button variant="contained" onClick={() => { setOpenEmoji(true); }} >Emoji</Button>
       <Backdrop
-        sx={{ color: '#fff', zIndex: 2}}
+        sx={{ color: '#fff', zIndex: 2 }}
         open={openEmoji}
         onClick={handleEmojiClose}
       >

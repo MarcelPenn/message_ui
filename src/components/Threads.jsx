@@ -16,21 +16,12 @@ import React, { Component } from "react";
 // import axios from "axios";
 import { DataContext } from "../Utils"
 
-
 const Threads = ({ }) => {
 
-
-  // const [, setThreadList] = React.useState([]);
-
-  // const [update, setUpdate] = React.useState(false);
   const { threads, setState } = React.useContext(DataContext);
-
-  // let threadData = DataContext;
-  // let threadList = threadData.threadList
-  // let currentThread = threadData.currentThread
-
  
   function changeThread(threaditem) {
+    setState({lastUpdate: ""})
     setState({currentThread: threaditem})
   }
 
